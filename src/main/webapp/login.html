@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Page</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+		<style>
+			.container{
+				margin-top: 20px;}
+		</style>
+</head>
+<body>
+	<div class="container">
+	    <h4>Login Page</h4>
+	    <form id="loginForm" onsubmit="authenticate(event); return false;">
+	        <input type="email" id="login_id" name="login_id"  placeholder="Login id"  required><br><br>
+	        <input type="password" id="password" name="password"  placeholder="password" required>
+	        <br><br><button type="submit"  class="btn btn-primary" >Submit</button>
+	    </form>
+    </div>
+</body>
+<script>
+async function authenticate(event) {
+    event.preventDefault();
+    const loginForm = document.getElementById("loginForm");
+    const loginId = loginForm.login_id.value;
+    const password = loginForm.password.value;
+
+    const authenticateResponse = await fetch("https://qa2.sunbasedata.com/sunbase/portal/api/assignment_auth.jsp", {
+    	//mode: 'no-cors',
+        method: 'POST',
+      
+        body: JSON.stringify({
+            login_id: loginId,
+            password: password
+        })
+    });
+	console.log(authenticateResponse);
+    if (authenticateResponse.ok) {
+        const data = await authenticateResponse.json();
+        const bearerToken = data.access_token;
+        console.log(bearerToken);
+        // Save the bearer token to session storage
+        sessionStorage.setItem("bearerToken", bearerToken);
+        // Redirect to the customer list page
+        window.location.href = "customer_list.html";
+    } else {
+        alert("Authentication failed.");
+    }
+}
+</script>
+</html>
+

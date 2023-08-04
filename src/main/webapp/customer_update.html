@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Update Customer</title>
+</head>
+<body>
+    <h1>Update Customer</h1>
+    <form id="updateCustomerForm" onsubmit="updateCustomer(event)">
+        <label for="customerUuid">Customer UUID:</label>
+        <input type="text" id="customerUuid" name="customerUuid" required>
+        <label for="first_name">First Name:</label>
+        <input type="text" id="first_name" name="first_name" required>
+        <label for="last_name">Last Name:</label>
+        <input type="text" id="last_name" name="last_name" required>
+        <label for="street">Street:</label>
+        <input type="text" id="street" name="street">
+        <label for="address">Address:</label>
+        <input type="text" id="address" name="address">
+        <label for="city">City:</label>
+        <input type="text" id="city" name="city">
+        <label for="state">State:</label>
+        <input type="text" id="state" name="state">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email">
+        <label for="phone">Phone:</label>
+        <input type="text" id="phone" name="phone">
+        <button type="submit">Update</button>
+    </form>
+</body>
+<script>
+    async function updateCustomer(event) {
+        event.preventDefault();
+        const updateCustomerForm = document.getElementById("updateCustomerForm");
+        const customerUuid = updateCustomerForm.customerUuid.value;
+        const firstName = updateCustomerForm.first_name.value;
+        const lastName = updateCustomerForm.last_name.value;
+        const street = updateCustomerForm.street.value;
+        const address = updateCustomerForm.address.value;
+        const city = updateCustomerForm.city.value;
+        const state = updateCustomerForm.state.value;
+        const email = updateCustomerForm.email.value;
+        const phone = updateCustomerForm.phone.value;
+
+        const bearerToken = sessionStorage.getItem("bearerToken");
+
+        const updateCustomerResponse = await fetch("https://qa2.sunbasedata.com/sunbase/portal/api/assignment.jsp", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${bearerToken}`
+            },
+            body: JSON.stringify({
+                cmd: "update",
+                uuid: customerUuid,
+                first_name: firstName,
+                last_name: lastName,
+                street: street,
+                address: address,
+                city: city,
+                state: state,
+                email: email,
+                phone: phone
+            })
+        });
+
+        if (updateCustomerResponse.status === 200) {
+            // Customer updated successfully
+            alert("Customer updated successfully!");
+            // Redirect to customer list page or update the customer list on the current page
+            window.location.href = "customer_list.html"; // Redirect to customer list page
+        } else if (updateCustomerResponse.status === 500) {
+            // Handle server error (UUID not found)
+            alert("Error: Customer UUID not found.");
+        } else if (updateCustomerResponse.status === 400) {
+            // Handle client error (Body is Empty)
+            alert("Error: Body is Empty. Please fill in the required fields.");
+        } else {
+            // Handle other errors
+            alert("Failed to update customer. Please try again later.");
+        }
+    }
+</script>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Delete Customer</title>
+</head>
+<body>
+	<h1>Delete Customer</h1>
+	<form id="deleteCustomerForm" onsubmit="deleteCustomer(event)">
+		<label for="customerUuid">Customer UUID:</label> <input type="text"
+			id="customerUuid" name="customerUuid" required>
+		<button type="submit">Delete</button>
+	</form>
+</body>
+<script>
+	async
+	function deleteCustomer(event) {
+		event.preventDefault();
+		const deleteCustomerForm = document
+				.getElementById("deleteCustomerForm");
+		const customerUuid = deleteCustomerForm.customerUuid.value;
+
+		const bearerToken = sessionStorage.getItem("bearerToken");
+
+		const deleteCustomerResponse = await
+		fetch("https://qa2.sunbasedata.com/sunbase/portal/api/assignment.jsp",
+				{
+					method : "POST",
+					headers : {
+						"Content-Type" : "application/json",
+						"Authorization" : `Bearer ${bearerToken}`
+					},
+					body : JSON.stringify({
+						cmd : "delete",
+						uuid : customerUuid
+					})
+				});
+
+		if (deleteCustomerResponse.status === 200) {
+			alert("Customer deleted successfully!");
+			window.location.href = "customer_list.jsp"; // Redirect to customer list page
+		} else if (deleteCustomerResponse.status === 500) {
+			alert("Error: Customer could not be deleted. Please try again later.");
+		} else if (deleteCustomerResponse.status === 400) {
+			alert("Error: Customer UUID not found.");
+		} else {
+			alert("Failed to delete customer. Please try again later.");
+		}
+	}
+</script>
+</html>

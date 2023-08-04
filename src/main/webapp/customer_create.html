@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Create Customer</title>
+</head>
+<body>
+	<h1>Create Customer</h1>
+	<form id="createCustomerForm" onsubmit="createCustomer(event)">
+		<label for="first_name">First Name:</label> <input type="text"
+			id="first_name" name="first_name" required> <label
+			for="last_name">Last Name:</label> <input type="text" id="last_name"
+			name="last_name" required> <label for="street">Street:</label>
+		<input type="text" id="street" name="street"> <label
+			for="address">Address:</label> <input type="text" id="address"
+			name="address"> <label for="city">City:</label> <input
+			type="text" id="city" name="city"> <label for="state">State:</label>
+		<input type="text" id="state" name="state"> <label for="email">Email:</label>
+		<input type="email" id="email" name="email"> <label
+			for="phone">Phone:</label> <input type="text" id="phone" name="phone">
+		<button type="submit">Create</button>
+	</form>
+</body>
+<script>
+	
+	function createCustomer(event) {
+		event.preventDefault();
+		const createCustomerForm = document
+				.getElementById("createCustomerForm");
+		const firstName = createCustomerForm.first_name.value;
+		const lastName = createCustomerForm.last_name.value;
+		const street = createCustomerForm.street.value;
+		const address = createCustomerForm.address.value;
+		const city = createCustomerForm.city.value;
+		const state = createCustomerForm.state.value;
+		const email = createCustomerForm.email.value;
+		const phone = createCustomerForm.phone.value;
+
+		const bearerToken = sessionStorage.getItem("bearerToken");
+		console.log("token  -", bearerToken);
+		const createCustomerResponse = fetch("https://qa2.sunbasedata.com/sunbase/portal/api/assignment.jsp?cmd=create",{
+					mode: 'cors',
+					method : "POST",
+					headers : {
+						"Authorization" : 'Bearer dGVzdEBzdW5iYXNlZGF0YS5jb206VGVzdEAxMjM='
+					},
+					body : JSON.stringify({
+						first_name : firstName,
+						last_name : lastName,
+						street : street,
+						address : address,
+						city : city,
+						state : state,
+						email : email,
+						phone : phone
+					})
+				});
+
+		if (createCustomerResponse.status === 201) {
+			alert("Successfully Created");
+			window.location.href = "customer_list.html";
+		} else if (createCustomerResponse.status === 400) {
+			alert("First Name or Last Name is missing");
+		} else {
+			alert("Failed to create customer. Please try again later.");
+		}
+	}
+</script>
+</html>

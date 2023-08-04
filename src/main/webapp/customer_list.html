@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<style>
+			.container{
+				margin-top: 20px;}
+		</style>
+<title>Customer List</title>
+</head>
+<body>
+<div class="container">
+	<button onclick="showCreateCustomerScreen()" type="submit"  class="btn btn-primary" >Add Customer</button>
+	<h4>Customer List</h4>
+	<table>
+		<thead>
+			<tr>
+				<th>First Name</th>
+				<th>Last Name</th>
+				<th>Street</th>
+				<th>Address</th>
+				<th>City</th>
+				<th>State</th>
+				<th>Email</th>
+				<th>Phone</th>
+			</tr>
+		</thead>
+		<tbody id="customerTableBody">
+		</tbody>
+	</table>
+	</div>
+</body>
+<script>
+    async function loadCustomerList() {
+        const bearerToken = sessionStorage.getItem("bearerToken");
+		
+        console.log("token-",bearerToken)
+        
+        if (!bearerToken) {
+            alert("Authentication token not found.");
+            return;
+        }
+        
+         const customerListResponse = await fetch("https://qa2.sunbasedata.com/sunbase/portal/api/assignment.jsp?cmd=get_customer_list", {
+            method: "GET",
+            headers: {
+            	"Content-Type": "application/json",
+                'Authorization': `Bearer ${bearerToken}`
+            },
+            mode: 'no-cors'
+        });
+
+        if (customerListResponse.ok) {
+            const customers = await customerListResponse.json();
+            console.log(customers);
+            const customerTableBody = document.getElementById("customerTableBody");
+            customerTableBody.innerHTML = ""; 
+
+            customers.forEach(customer => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${customer.first_name}</td>
+                    <td>${customer.last_name}</td>
+                    <td>${customer.street}</td>
+                    <td>${customer.address}</td>
+                    <td>${customer.city}</td>
+                    <td>${customer.state}</td>
+                    <td>${customer.email}</td>
+                    <td>${customer.phone}</td>
+                `;
+                customerTableBody.appendChild(row);
+            });
+        } else {
+            const errorMessage = await customerListResponse.text();
+            alert(`Failed to fetch customer list. Error: ${errorMessage}`);
+        } 
+    }
+
+    function showCreateCustomerScreen() {
+        window.location.href = "customer_create.html"; 
+    }
+
+    loadCustomerList();
+</script>
+</html>
